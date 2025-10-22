@@ -5,8 +5,8 @@
 {% block content %}
 <div class="auth-container register-container">
     <div class="auth-header">
-        <h1>Start Your Fitness Journey</h1>
-        <p>Create your FitnessHub account</p>
+        <h1>Начните свою фитнес карьеру</h1>
+        <p>Создайте аккаунт</p>
     </div>
     
     <div class="auth-content">
@@ -16,7 +16,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="{{ form.first_name.id_for_label }}">
-                        <i class="fas fa-user"></i>First Name
+                        <i class="fas fa-user"></i>Имя
                     </label>
                     <div class="icon-wrapper">
                         <i class="fas fa-user"></i>
@@ -29,7 +29,7 @@
                 
                 <div class="form-group">
                     <label for="{{ form.last_name.id_for_label }}">
-                        <i class="fas fa-user"></i>Last Name
+                        <i class="fas fa-user"></i>Фамилия
                     </label>
                     <div class="icon-wrapper">
                         <i class="fas fa-user"></i>
@@ -43,7 +43,7 @@
 
             <div class="form-group">
                 <label for="{{ form.email.id_for_label }}">
-                    <i class="fas fa-envelope"></i>Email Address
+                    <i class="fas fa-envelope"></i>Почта
                 </label>
                 <div class="icon-wrapper">
                     <i class="fas fa-envelope"></i>
@@ -56,7 +56,7 @@
 
             <div class="form-group">
                 <label for="{{ form.password1.id_for_label }}">
-                    <i class="fas fa-lock"></i>Password
+                    <i class="fas fa-lock"></i>Пароль
                 </label>
                 <div class="icon-wrapper">
                     <i class="fas fa-lock"></i>
@@ -70,7 +70,7 @@
 
             <div class="form-group">
                 <label for="{{ form.password2.id_for_label }}">
-                    <i class="fas fa-lock"></i>Confirm Password
+                    <i class="fas fa-lock"></i>Подтвердите пароль
                 </label>
                 <div class="icon-wrapper">
                     <i class="fas fa-lock"></i>
@@ -82,20 +82,15 @@
                 {% endif %}
             </div>
 
-            <div class="checkbox-form">
-                {{ form.is_trener }}
-                <label for="{{ form.is_trener.id_for_label }}">
-                    <i class="fas fa-dumbbell"></i>I am a fitness trainer
-                </label>
-            </div>
+
 
             <button type="submit" class="auth-button">
-                <i class="fas fa-user-plus"></i>Create Account
+                <i class="fas fa-user-plus"></i>Создать аккаунт
             </button>
             
             <div class="auth-links">
                 <a href="{% url 'user:login' %}" class="auth-link">
-                    <i class="fas fa-sign-in-alt"></i>Already have an account? Sign in
+                    <i class="fas fa-sign-in-alt"></i>уже есть аккаунт? Войти
                 </a>
             </div>
         </form>
