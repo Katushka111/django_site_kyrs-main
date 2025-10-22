@@ -1,0 +1,84 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h1 class="section-title">🛒 Ваша корзина</h1>
+    
+    {% if cart %}
+        {% for item in cart %}
+            <div class="cart-item">
+                <div class="cart-item-image">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    {% else %}
+                        📦
+                    {% endif %}
+                </div>
+                
+                <div class="cart-item-info">
+                    <div class="cart-item-name">{{ item.product.name }}</div>
+                        <div class="cart-item-price">{{ item.price }} BYN</div>
+                </div>
+                
+                <div class="cart-item-quantity">
+                    <form action="{% url 'cart:cart_add' item.product.id %}" method="post" style="display: flex; align-items: center; gap: 10px;">
+                        <button type="button" class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                        {{ item.update_quantity_form.quantity }}
+                        {{ item.update_quantity_form.override }}
+                        <button type="button" class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                        <button type="submit" class="btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">Обновить</button>
+                        {% csrf_token %}
+                    </form>
+                </div>
+                
+                    <div class="cart-item-total">{{ item.total_price }} BYN</div>
+                
+                <form action="{% url 'cart:cart_remove' item.product.id %}" method="post" style="margin-left: 10px;">
+                    <button type="submit" class="quantity-btn" style="background: var(--danger-color); color: white;" title="Удалить товар">
+                        🗑️
+                    </button>
+                    {% csrf_token %}
+                </form>
+            </div>
+        {% endfor %}
+        
+        <div class="cart-total">
+            <h3>Итого к оплате</h3>
+            <div class="cart-total-amount">{{ cart.get_total_price }} BYN</div>
+        </div>
+        
+        <div class="cart-actions">
+            <a href="{% url 'main:product_list' %}" class="btn-primary">
+                ← Продолжить покупки
+            </a>
+            <a href="#" class="btn-primary" style="background: var(--success-color);">
+                Оформить заказ →
+            </a>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <h2>Ваша корзина пуста</h2>
+            <p>Добавьте товары, чтобы они появились здесь</p>
+            <a href="{% url 'main:product_list' %}" class="btn-primary">
+                Перейти к товарам
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function changeQuantity(button, change) {
+    const form = button.closest('form');
+    const quantityInput = form.querySelector('input[name="quantity"]');
+    let currentValue = parseInt(quantityInput.value) || 1;
+    let newValue = currentValue + change;
+    
+    if (newValue < 1) newValue = 1;
+    
+    quantityInput.value = newValue;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,455 @@
+{% extends "review/base.html" %}
+
+{% block review_title %}Оставить отзыв{% endblock review_title %}
+{% block review_subtitle %}Поделитесь своим мнением о товаре{% endblock review_subtitle %}
+
+{% block review_content %}
+<div class="review-form">
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="error-messages">
+                {% for error in form.non_field_errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Скрываем поля имени и email для авторизованных -->
+        {% if user.is_authenticated %}
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ user.first_name|first|default:user.email|first|upper }}
+                </div>
+                <div class="user-details">
+                    <strong>Вы вошли как:</strong> {{ user.first_name|default:user.email }}
+                    <br>
+                    <small>Ваши данные будут автоматически подставлены в отзыве</small>
+                </div>
+            </div>
+            
+            <!-- Скрытые поля для автоматического заполнения -->
+            <input type="hidden" name="author_name" value="{{ user.first_name|default:user.email }}">
+            <input type="hidden" name="author_email" value="{{ user.email }}">
+            
+        {% else %}
+            <!-- Для неавторизованных показываем поля -->
+            <div class="form-group">
+                <label for="{{ form.author_name.id_for_label }}">{{ form.author_name.label }}</label>
+                {{ form.author_name }}
+                {% if form.author_name.errors %}
+                    <div class="error-messages">
+                        {% for error in form.author_name.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.author_email.id_for_label }}">{{ form.author_email.label }}</label>
+                {{ form.author_email }}
+                {% if form.author_email.errors %}
+                    <div class="error-messages">
+                        {% for error in form.author_email.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+        
+        <!-- Звездный рейтинг -->
+        <div class="form-group">
+            <label>Оценка</label>
+            <div class="star-rating-widget">
+                <div class="stars-container">
+                    {% for i in "54321" %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" 
+                           {% if form.rating.value == i %}checked{% endif %} 
+                           class="star-input">
+                    <label for="star{{ i }}" class="star-label" title="{{ i }} звезд">
+                        <span class="star-icon">☆</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                <div class="rating-text">
+                    <span class="current-rating">Выберите оценку</span>
+                </div>
+            </div>
+            {% if form.rating.errors %}
+                <div class="error-messages">
+                    {% for error in form.rating.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.text.id_for_label }}">{{ form.text.label }}</label>
+            {{ form.text }}
+            {% if form.text.errors %}
+                <div class="error-messages">
+                    {% for error in form.text.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        {{ form.product_id }}
+        
+        <!-- Информация о товаре -->
+        {% if product_id and product_id != "0" %}
+            <div class="product-info">
+                <div class="product-icon">📦</div>
+                <div class="product-details">
+                    <strong>Отзыв о товаре:</strong> ID {{ product_id }}
+                </div>
+            </div>
+        {% else %}
+            <div class="product-info">
+                <div class="product-icon">🏪</div>
+                <div class="product-details">
+                    <strong>Общий отзыв:</strong> О магазине в целом
+                </div>
+            </div>
+        {% endif %}
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const productIdField = document.querySelector('input[name="product_id"]');
+                const productId = '{{ product_id|default:"0" }}';
+                if (productIdField) {
+                    productIdField.value = productId;
+                }
+            });
+        </script>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <span class="btn-icon">📝</span>
+                Отправить отзыв
+            </button>
+            <a href="{% url 'review:review_list' %}" class="btn btn-secondary">
+                <span class="btn-icon">←</span>
+                Все отзывы
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+.review-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+   
+    border-radius: 15px;
+    margin-bottom: 25px;
+    border: 2px dashed #cbd5e0;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.user-details {
+    flex: 1;
+}
+
+/* Стили для звездного рейтинга */
+.star-rating-widget {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.stars-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 15px;
+    flex-direction: row-reverse;
+}
+
+.star-input {
+    display: none;
+}
+
+.star-label {
+    cursor: pointer;
+    font-size: 2.5em;
+    color: #e2e8f0;
+    transition: all 0.3s ease;
+    padding: 5px;
+}
+
+.star-label:hover,
+.star-label:hover ~ .star-label,
+.star-input:checked ~ .star-label {
+    color: #ffd700;
+    transform: scale(1.2);
+}
+
+.star-input:checked ~ .star-label .star-icon {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+.rating-text {
+    margin-top: 10px;
+}
+
+.current-rating {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #4a5568;
+   
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* Стили для полей формы */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 1.1em;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+   
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+   
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Информация о товаре */
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    
+    border-radius: 12px;
+    border: 2px solid #c6f6d5;
+    margin: 20px 0;
+}
+
+.product-icon {
+    font-size: 1.5em;
+}
+
+.product-details {
+    color: #2f855a;
+    font-weight: 500;
+}
+
+/* Кнопки */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1em;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+ 
+    
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(113, 128, 150, 0.4);
+}
+
+.btn-icon {
+    font-size: 1.2em;
+}
+
+/* Сообщения об ошибках */
+.error-messages {
+    margin-top: 8px;
+}
+
+.error {
+    color: #e53e3e;
+    font-size: 0.9em;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .review-form {
+        padding: 20px;
+        margin: 15px;
+    }
+    
+    .stars-container {
+        gap: 3px;
+    }
+    
+    .star-label {
+        font-size: 2em;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .star-label {
+        font-size: 1.8em;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1em;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const starInputs = document.querySelectorAll('.star-input');
+    const ratingText = document.querySelector('.current-rating');
+    const ratingLabels = {
+        '1': 'Плохо',
+        '2': 'Удовлетворительно',
+        '3': 'Нормально',
+        '4': 'Хорошо',
+        '5': 'Отлично'
+    };
+
+    starInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.checked) {
+                ratingText.textContent = ratingLabels[this.value] + ' (' + this.value + ' звезд)';
+                
+                // Анимация выбранной звезды
+                const label = this.nextElementSibling;
+                label.style.animation = 'starPulse 0.6s ease';
+                
+                setTimeout(() => {
+                    label.style.animation = '';
+                }, 600);
+            }
+        });
+        
+        input.addEventListener('mouseenter', function() {
+            if (!this.checked) {
+                ratingText.textContent = ratingLabels[this.value] + ' (' + this.value + ' звезд)';
+            }
+        });
+        
+        input.addEventListener('mouseleave', function() {
+            const checkedInput = document.querySelector('.star-input:checked');
+            if (checkedInput) {
+                ratingText.textContent = ratingLabels[checkedInput.value] + ' (' + checkedInput.value + ' звезд)';
+            } else {
+                ratingText.textContent = 'Выберите оценку';
+            }
+        });
+    });
+    
+    // Проверяем, есть ли уже выбранная оценка
+    const checkedInput = document.querySelector('.star-input:checked');
+    if (checkedInput) {
+        ratingText.textContent = ratingLabels[checkedInput.value] + ' (' + checkedInput.value + ' звезд)';
+    }
+});
+
+// Анимация пульсации звезды
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes starPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock review_content %}

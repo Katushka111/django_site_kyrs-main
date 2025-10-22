@@ -1,0 +1,435 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ service.name }}{% endblock title %}
+
+{% block content %}
+<div class="service-detail">
+    <div class="service-main">
+        <div class="service-image">
+            {% if service.image %}
+                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="main-image">
+            {% else %}
+                <div class="main-image" style="background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 8rem;">
+                    🏃‍♂️
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="service-info">
+            <h1 class="service-title">{{ service.name }}</h1>
+            
+            <div class="service-details">
+                <div class="detail-item">
+                    <strong>Тренер:</strong> {{ service.trainer_name }}
+                    {% if service.trainer_photo %}
+                        <img src="{{ service.trainer_photo.url }}" alt="{{ service.trainer_name }}" class="trainer-photo">
+                    {% endif %}
+                </div>
+                
+                <div class="detail-item">
+                    <strong>Время мероприятия:</strong> {{ service.event_time|date:"d.m.Y в H:i" }}
+                </div>
+                
+                <div class="detail-item price">
+                                <strong>Стоимость:</strong> <span class="price-value">{{ service.price }} BYN</span>
+                </div>
+            </div>
+            
+            {% if service.description %}
+                <div class="service-description">
+                    <h3>Описание</h3>
+                    <p>{{ service.description|linebreaks }}</p>
+                </div>
+            {% endif %}
+            
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'main:book_service' service.id %}" class="booking-form">
+                    {% csrf_token %}
+                    <button type="submit" class="book-btn">Записаться на услугу</button>
+                </form>
+            {% else %}
+                <div class="login-required">
+                    <p>Для записи на услугу необходимо <a href="{% url 'user:login' %}">войти в систему</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% if messages %}
+    <div class="messages-container" style="position: fixed; top: 80px; right: 20px; z-index: 1060; max-width: 400px;">
+        {% for message in messages %}
+            <div class="message-alert alert-{{ message.tags }} animate__animated animate__fadeInRight animate__faster" role="alert">
+                <div class="message-content">
+                    <div class="message-icon">
+                        {% if message.tags == 'success' %}✅
+                        {% elif message.tags == 'error' or message.tags == 'danger' %}❌
+                        {% elif message.tags == 'warning' %}⚠️
+                        {% elif message.tags == 'info' %}ℹ️
+                        {% else %}💬{% endif %}
+                    </div>
+                    <div class="message-text">
+                        <div class="message-title">
+                            {% if message.tags == 'success' %}Успех!
+                            {% elif message.tags == 'error' or message.tags == 'danger' %}Ошибка
+                            {% elif message.tags == 'warning' %}Внимание
+                            {% elif message.tags == 'info' %}Информация
+                            {% else %}Сообщение{% endif %}
+                        </div>
+                        <div class="message-body">{{ message }}</div>
+                    </div>
+                    <button type="button" class="message-close" onclick="this.parentElement.parentElement.classList.add('animate__fadeOutRight')">
+                        &times;
+                    </button>
+                </div>
+                <div class="message-progress"></div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <style>
+    .message-alert {
+        border: none;
+        border-radius: 15px;
+        padding: 0;
+        margin-bottom: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        position: relative;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, var(--success-color) 0%, #2ecc71 100%);
+        color: white;
+    }
+
+    .alert-error, .alert-danger {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+        color: white;
+    }
+
+    .alert-warning {
+        background: linear-gradient(135deg, var(--warning-color) 0%, #f39c12 100%);
+        color: white;
+    }
+
+    .alert-info {
+        background: linear-gradient(135deg, var(--info-color) 0%, #3498db 100%);
+        color: white;
+    }
+
+    .message-content {
+        display: flex;
+        align-items: center;
+        padding: 18px 20px;
+        position: relative;
+    }
+
+    .message-icon {
+        font-size: 1.8rem;
+        margin-right: 15px;
+        flex-shrink: 0;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .message-text {
+        flex: 1;
+    }
+
+    .message-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .message-body {
+        font-size: 0.95rem;
+        opacity: 0.95;
+        line-height: 1.4;
+    }
+
+    .message-close {
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        margin-left: 10px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+        line-height: 1;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: inherit;
+    }
+
+    .message-close:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+    }
+
+    .message-progress {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.5);
+        animation: progressBar 5s linear forwards;
+    }
+
+    @keyframes progressBar {
+        0% { width: 100%; }
+        100% { width: 0%; }
+    }
+
+    /* Анимации */
+    .animate__animated {
+        animation-duration: 0.5s;
+    }
+
+    .animate__faster {
+        animation-duration: 0.3s;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .messages-container {
+            left: 20px;
+            right: 20px;
+            max-width: none;
+            top: 70px;
+        }
+        
+        .message-alert {
+            margin-bottom: 10px;
+        }
+        
+        .message-content {
+            padding: 15px;
+        }
+        
+        .message-icon {
+            font-size: 1.5rem;
+            margin-right: 12px;
+        }
+        
+        .message-title {
+            font-size: 1rem;
+        }
+        
+        .message-body {
+            font-size: 0.85rem;
+        }
+        
+        .message-close {
+            width: 25px;
+            height: 25px;
+            font-size: 1.2rem;
+        }
+    }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Автоматическое скрытие сообщений через 5 секунд
+        const messages = document.querySelectorAll('.message-alert');
+        messages.forEach(message => {
+            setTimeout(() => {
+                message.classList.add('animate__fadeOutRight');
+                setTimeout(() => {
+                    if (message.parentNode) {
+                        message.parentNode.removeChild(message);
+                    }
+                }, 300);
+            }, 5000);
+        });
+
+        // Обработка клика по кнопке закрытия
+        document.querySelectorAll('.message-close').forEach(button => {
+            button.addEventListener('click', function() {
+                const message = this.closest('.message-alert');
+                message.classList.add('animate__fadeOutRight');
+                setTimeout(() => {
+                    if (message.parentNode) {
+                        message.parentNode.removeChild(message);
+                    }
+                }, 300);
+            });
+        });
+    });
+    </script>
+{% endif %}
+    {% if related_services %}
+        <div class="related-services">
+            <h2>Другие услуги</h2>
+            <div class="products-grid">
+                {% for related_service in related_services %}
+                    <div class="product-card">
+                        {% if related_service.image %}
+                            <img src="{{ related_service.image.url }}" alt="{{ related_service.name }}" class="product-image">
+                        {% else %}
+                            <div class="product-image" style="background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                🏃‍♂️
+                            </div>
+                        {% endif %}
+                        
+                        <div class="product-info">
+                            <h3 class="product-name">{{ related_service.name }}</h3>
+                            <div class="service-trainer">
+                                <strong>Тренер:</strong> {{ related_service.trainer_name }}
+                            </div>
+                            <div class="service-time">
+                                <strong>Время:</strong> {{ related_service.event_time|date:"d.m.Y H:i" }}
+                            </div>
+                                        <div class="product-price">{{ related_service.price }} BYN</div>
+                            
+                            <a href="{{ related_service.get_absolute_url }}" class="product-link">Подробнее</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.service-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.service-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 60px;
+    background: var(--bg-primary);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.service-image {
+    width: 100%;
+}
+
+.main-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+.service-title {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.service-details {
+    margin-bottom: 30px;
+}
+
+.detail-item {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+}
+
+.trainer-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+}
+
+.price {
+    font-size: 1.3rem;
+}
+
+.price-value {
+    color: var(--accent-color);
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.service-description {
+    margin-bottom: 30px;
+}
+
+.service-description h3 {
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.booking-form {
+    margin-top: 30px;
+}
+
+.book-btn {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.book-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.login-required {
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.related-services {
+    margin-top: 60px;
+}
+
+.related-services h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .service-main {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .service-title {
+        font-size: 2rem;
+    }
+    
+    .main-image {
+        height: 250px;
+    }
+}
+</style>
+{% endblock content %}

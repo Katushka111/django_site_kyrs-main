@@ -1,0 +1,59 @@
+{% extends "review/base.html" %}
+
+{% block review_title %}Отзывы наших клиентов{% endblock review_title %}
+{% block review_subtitle %}Читайте отзывы других покупателей и делитесь своими впечатлениями{% endblock review_subtitle %}
+
+{% block review_content %}
+<div class="review-actions">
+    <a href="{% url 'review:review_create' %}" class="btn">Оставить отзыв</a>
+</div>
+
+{% if reviews %}
+    <div class="reviews-list">
+        {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header-card">
+                    <div>
+                        <div class="review-author">{{ review.author_name }}</div>
+                        <div class="review-date">{{ review.created|date:"d.m.Y в H:i" }}</div>
+                    </div>
+                    <div class="review-rating">{{ review.get_rating_display }}</div>
+                </div>
+                <div class="review-text">{{ review.text|linebreaks }}</div>
+                <div class="review-product">
+                    {% if review.product_id and review.product_id != 0 %}
+                        <small>Отзыв о товаре ID: {{ review.product_id }}</small>
+                    {% else %}
+                        <small>Общий отзыв о магазине</small>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Пагинация -->
+    {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; Первая</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+            {% endif %}
+            
+            <span class="current">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Следующая</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% else %}
+    <div class="no-reviews">
+        <h3>Пока нет отзывов</h3>
+        <p>Станьте первым, кто оставит отзыв о наших товарах!</p>
+        <a href="{% url 'review:review_create' %}" class="btn">Оставить первый отзыв</a>
+    </div>
+{% endif %}
+{% endblock review_content %}

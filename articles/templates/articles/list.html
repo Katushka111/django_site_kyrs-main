@@ -1,0 +1,276 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Статьи - Интернет-магазин{% endblock title %}
+
+{% block content %}
+<div class="articles-container">
+    <div class="category-header">
+        <h1>📝 Полезные статьи</h1>
+        <p>Читайте интересные материалы о наших товарах и услугах</p>
+    </div>
+    
+    <div class="articles-section">
+        {% if articles %}
+            <div class="articles-grid">
+                {% for article in articles %}
+                    <article class="article-card">
+                        {% if article.image %}
+                            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="article-image">
+                        {% else %}
+                            <div class="article-image" style="background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                📄
+                            </div>
+                        {% endif %}
+                        
+                        <div class="article-content">
+                            <div class="article-meta">
+                                <span class="article-author">👤 {{ article.author.get_full_name|default:article.author.username }}</span>
+                                <span class="article-date">📅 {{ article.created|date:"d.m.Y" }}</span>
+                                <span class="article-views">👁️ {{ article.views }}</span>
+                            </div>
+                            
+                            <h2 class="article-title">
+                                <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                            </h2>
+                            
+                            {% if article.excerpt %}
+                                <p class="article-excerpt">{{ article.excerpt }}</p>
+                            {% else %}
+                                <p class="article-excerpt">{{ article.content|striptags|truncatewords:30 }}</p>
+                            {% endif %}
+                            
+                            <div class="article-actions">
+                                <a href="{{ article.get_absolute_url }}" class="article-link">Читать далее →</a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            
+            <!-- Пагинация -->
+            {% if page_obj.has_other_pages %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1" class="pagination-link">« Первая</a>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">‹ Предыдущая</a>
+                    {% endif %}
+                    
+                    <span class="current-page">
+                        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Следующая ›</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">Последняя »</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+        {% else %}
+            <div class="no-articles">
+                <div class="no-articles-icon">📝</div>
+                <h3>Статьи пока не добавлены</h3>
+                <p>Скоро здесь появятся интересные материалы</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.articles-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.article-card {
+    background: var(--bg-primary);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px var(--shadow);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+}
+
+.article-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 16px 48px var(--shadow-hover);
+}
+
+.article-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.article-content {
+    padding: 25px;
+}
+
+.article-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.article-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.article-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.article-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.article-title a:hover {
+    color: var(--accent-color);
+}
+
+.article-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.article-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.article-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.article-link:hover {
+    color: var(--secondary-color);
+    transform: translateX(5px);
+}
+
+/* Пагинация */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.pagination-link {
+    padding: 10px 20px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.pagination-link:hover {
+    background: var(--accent-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.current-page {
+    padding: 10px 20px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    font-weight: 600;
+}
+
+/* Состояние без статей */
+.no-articles {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.no-articles-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.no-articles h3 {
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .articles-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .article-content {
+        padding: 20px;
+    }
+    
+    .article-meta {
+        gap: 10px;
+    }
+    
+    .article-title {
+        font-size: 1.2rem;
+    }
+    
+    .pagination {
+        gap: 10px;
+    }
+    
+    .pagination-link {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .articles-container {
+        padding: 15px;
+    }
+    
+    .article-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .pagination {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock content %}

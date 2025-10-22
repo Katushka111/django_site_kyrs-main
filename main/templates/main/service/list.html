@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Услуги{% endblock title %}
+
+{% block content %}
+<div class="category-header">
+    <h1>Наши услуги</h1>
+    <p>Выберите подходящую услугу и запишитесь на мероприятие</p>
+</div>
+
+<div class="products-section">
+    {% if services %}
+        <div class="products-grid">
+            {% for service in services %}
+                <div class="product-card">
+                    {% if service.image %}
+                        <img src="{{ service.image.url }}" alt="{{ service.name }}" class="product-image">
+                    {% else %}
+                        <div class="product-image" style="background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            🏃‍♂️
+                        </div>
+                    {% endif %}
+                    
+                    <div class="product-info">
+                        <h3 class="product-name">{{ service.name }}</h3>
+                        <div class="service-trainer">
+                            <strong>Тренер:</strong> {{ service.trainer_name }}
+                        </div>
+                        <div class="service-time">
+                            <strong>Время:</strong> {{ service.event_time|date:"d.m.Y H:i" }}
+                        </div>
+                                    <div class="product-price">{{ service.price }} BYN</div>
+                        
+                        {% if service.description %}
+                            <p class="product-description">{{ service.description|truncatewords:20 }}</p>
+                        {% endif %}
+                        
+                        <a href="{{ service.get_absolute_url }}" class="product-link">Подробнее</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-products">
+            <h2>Услуги пока не добавлены</h2>
+            <p>Скоро здесь появятся новые услуги и мероприятия!</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock content %}

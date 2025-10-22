@@ -1,0 +1,53 @@
+{% extends "main/base.html" %}
+{% block title %}
+    {% if category %}{{ category.name }} - Интернет-магазин{% else %}Все товары - Интернет-магазин{% endif %}
+{% endblock title %}
+
+{% block content %}
+    {% if category %}
+        <div class="category-header">
+            <h1>{{ category.name }}</h1>
+            <p>Товары в категории "{{ category.name }}"</p>
+        </div>
+    {% endif %}
+    
+    <div class="products-section">
+        <h2 class="section-title">
+            {% if category %}{{ category.name }}{% else %}Все товары{% endif %}
+        </h2>
+        {% if products %}
+            <div class="products-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                        {% else %}
+                            <div class="product-image" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #667eea, #764ba2); color: white; font-size: 3rem;">
+                                📦
+                            </div>
+                        {% endif %}
+                        <div class="product-info">
+                            <h3 class="product-name">{{ product.name }}</h3>
+                            <div class="product-price">{{ product.price }} BYN</div>
+                            <p class="product-description">{{ product.description|truncatewords:20 }}</p>
+                            <div class="product-actions">
+                                <a href="{{ product.get_absolute_url }}" class="product-link">Подробнее</a>
+                                {% if user.is_authenticated %}
+                                    <form method="post" action="{% url 'cart:cart_add' product.id %}" class="cart-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="add-to-cart-btn">В корзину</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-products">
+                <p>К сожалению, товары пока не добавлены в магазин.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

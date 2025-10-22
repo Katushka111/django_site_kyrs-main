@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Интернет-магазин{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="nav-container">
+            <a href="{% url 'main:product_list' %}" class="logo">🛍️ Магазин</a>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            
+            <!-- Desktop navigation -->
+            <nav class="nav-buttons desktop-nav">
+                <a href="{% url 'main:product_list' %}" class="nav-btn">Товары</a>
+                <a href="{% url 'main:service_list' %}" class="nav-btn">Услуги</a>
+                <a href="{% url 'review:review_list' %}" class="nav-btn">Отзывы</a>
+           
+                {%if request.user.email is not none%}
+                <a href="{% url 'user:profile' %}" class="nav-btn">Профиль</a>
+                <a href="{% url 'cart:cart_detail' %}" class="nav-btn">Корзина</a>
+                {%else%}
+                <a href="{% url 'user:login' %}" class="nav-btn">Войти</a>
+                <a href="{% url 'user:register' %}" class="nav-btn">Регистрация</a>
+                {%endif%}
+                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            </nav>
+            
+            <!-- Sidebar navigation -->
+            <nav class="nav-buttons sidebar-menu" id="sidebarMenu">
+                <div class="sidebar-header">
+                    <h3>Меню</h3>
+                    <button class="close-sidebar" onclick="toggleMenu()">✕</button>
+                </div>
+                <div class="sidebar-content">
+                    <a href="{% url 'main:product_list' %}" class="nav-btn">🛍️ Товары</a>
+                    <a href="{% url 'main:service_list' %}" class="nav-btn">🏃‍♂️ Услуги</a>
+                    <a href="{% url 'review:review_list' %}" class="nav-btn">💬 Отзывы</a>
+               
+                    {%if request.user.email is not none%}
+                    <a href="{% url 'user:profile' %}" class="nav-btn">👤 Профиль</a>
+                    <a href="{% url 'cart:cart_detail' %}" class="nav-btn">🛒 Корзина</a>
+                    {%else%}
+                    <a href="{% url 'user:login' %}" class="nav-btn">🔑 Войти</a>
+                    <a href="{% url 'user:register' %}" class="nav-btn">📝 Регистрация</a>
+                    {%endif%}
+                    <button class="theme-toggle sidebar-theme-toggle" onclick="toggleTheme()">🌙 Сменить тему</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
+
+    <main class="main-content">
+
+
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <h3 class="footer-title">🛍️ Наш магазин</h3>
+            <p class="footer-text">
+                Мы работаем для вас каждый день, предлагая качественные товары и отличный сервис.
+            </p>
+            <p class="footer-text">
+                © 2025 Интернет-магазин. Все права защищены.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update button icon
+            const button = document.querySelector('.theme-toggle');
+            if (button) {
+                button.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+
+        // Sidebar menu toggle functionality
+        function toggleMenu() {
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const toggleButton = document.querySelector('.menu-toggle');
+            
+            if (sidebarMenu && toggleButton) {
+                sidebarMenu.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+                toggleButton.classList.toggle('active');
+                toggleButton.textContent = sidebarMenu.classList.contains('active') ? '✕' : '☰';
+            }
+        }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const toggleButton = document.querySelector('.menu-toggle');
+            
+            if (sidebarMenu && toggleButton && 
+                !sidebarMenu.contains(event.target) && 
+                !toggleButton.contains(event.target)) {
+                sidebarMenu.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                toggleButton.classList.remove('active');
+                toggleButton.textContent = '☰';
+            }
+        });
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            const button = document.querySelector('.theme-toggle');
+            if (button) {
+                button.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+        });
+    </script>
+
+</body>
+</html>

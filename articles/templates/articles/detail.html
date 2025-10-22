@@ -1,0 +1,240 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}{{ article.title }} - Статьи{% endblock title %}
+
+{% block content %}
+<div class="article-detail-container">
+    <article class="article-detail">
+        {% if article.image %}
+            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="article-detail-image">
+        {% else %}
+            <div class="article-detail-image" style="background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                📄
+            </div>
+        {% endif %}
+        
+        <div class="article-detail-content">
+            <div class="article-detail-meta">
+                <div class="article-meta-left">
+                    <span class="article-author">👤 {{ article.author.get_full_name|default:article.author.username }}</span>
+                    <span class="article-date">📅 {{ article.created|date:"d.m.Y в H:i" }}</span>
+                    <span class="article-views">👁️ {{ article.views }} просмотров</span>
+                </div>
+            </div>
+            
+            <h1 class="article-detail-title">{{ article.title }}</h1>
+            
+            {% if article.excerpt %}
+                <div class="article-detail-excerpt">
+                    {{ article.excerpt }}
+                </div>
+            {% endif %}
+            
+            <div class="article-detail-text">
+                {{ article.content|linebreaks }}
+            </div>
+        </div>
+    </article>
+    
+    {% if similar_articles %}
+        <div class="similar-articles">
+            <h2>Похожие статьи</h2>
+            <div class="similar-articles-grid">
+                {% for similar_article in similar_articles %}
+                    <div class="similar-article-card">
+                        {% if similar_article.image %}
+                            <img src="{{ similar_article.image.url }}" alt="{{ similar_article.title }}" class="similar-article-image">
+                        {% else %}
+                            <div class="similar-article-image" style="background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                                📄
+                            </div>
+                        {% endif %}
+                        
+                        <div class="similar-article-content">
+                            <h3>
+                                <a href="{{ similar_article.get_absolute_url }}">{{ similar_article.title }}</a>
+                            </h3>
+                            <p>{{ similar_article.created|date:"d.m.Y" }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.article-detail-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.article-detail-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+.article-detail-content {
+    background: var(--bg-primary);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.article-detail-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.article-meta-left {
+    display: flex;
+    gap: 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.article-detail-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.article-detail-excerpt {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-color);
+}
+
+.article-detail-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+}
+
+.article-detail-text p {
+    margin-bottom: 1.5rem;
+}
+
+.similar-articles {
+    margin-top: 60px;
+}
+
+.similar-articles h2 {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.similar-articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.similar-article-card {
+    background: var(--bg-primary);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px var(--shadow);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.similar-article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px var(--shadow-hover);
+}
+
+.similar-article-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.similar-article-content {
+    padding: 20px;
+}
+
+.similar-article-content h3 {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.similar-article-content h3 a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.similar-article-content h3 a:hover {
+    color: var(--accent-color);
+}
+
+.similar-article-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .article-detail-container {
+        padding: 15px;
+    }
+    
+    .article-detail-image {
+        height: 250px;
+    }
+    
+    .article-detail-content {
+        padding: 25px;
+    }
+    
+    .article-detail-title {
+        font-size: 2rem;
+    }
+    
+    .article-detail-excerpt {
+        font-size: 1.1rem;
+        padding: 15px;
+    }
+    
+    .article-detail-text {
+        font-size: 1rem;
+    }
+    
+    .article-meta-left {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .article-detail-title {
+        font-size: 1.8rem;
+    }
+    
+    .similar-articles-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock content %}

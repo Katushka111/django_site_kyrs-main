@@ -1,0 +1,233 @@
+{% extends "review/base.html" %}
+
+{% block review_title %}Отзыв от {{ review.author_name }}{% endblock review_title %}
+{% block review_subtitle %}{{ review.created|date:"d.m.Y в H:i" }}{% endblock review_subtitle %}
+
+{% block review_content %}
+<div class="review-detail">
+    <div class="review-card">
+        <div class="review-header-card">
+            <div>
+                <div class="review-author">{{ review.author_name }}</div>
+                <div class="review-date">{{ review.created|date:"d.m.Y в H:i" }}</div>
+            </div>
+            <div class="star-rating">
+                {% with rating=review.rating %}
+                {% for i in "12345" %}
+                    {% if forloop.counter <= rating %}
+                        <span class="star filled">★</span>
+                    {% else %}
+                        <span class="star">☆</span>
+                    {% endif %}
+                {% endfor %}
+                <span class="rating-text">{{ review.get_rating_display }}</span>
+                {% endwith %}
+            </div>
+        </div>
+        <div class="review-text">{{ review.text|linebreaks }}</div>
+        <div class="review-product">
+            {% if review.product_id and review.product_id != 0 %}
+                <small>Отзыв о товаре ID: {{ review.product_id }}</small>
+            {% else %}
+                <small>Общий отзыв о магазине</small>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="review-actions">
+        <a href="{% url 'review:review_list' %}" class="btn btn-secondary">← Все отзывы</a>
+        <a href="{% url 'review:review_create' %}" class="btn">Оставить свой отзыв</a>
+    </div>
+</div>
+
+<style>
+.review-detail {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.review-card {
+   
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.review-header-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.review-author {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 5px;
+}
+
+.review-date {
+    color: #718096;
+    font-size: 0.9em;
+}
+
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 10px 15px;
+    border-radius: 25px;
+    color: white;
+}
+
+.star {
+    font-size: 1.5em;
+    
+    transition: all 0.2s ease;
+}
+
+.star.filled {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.rating-text {
+    font-weight: 600;
+    font-size: 0.9em;
+    margin-left: 5px;
+}
+
+.review-text {
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #4a5568;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f7fafc;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+}
+
+.review-product {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed #e2e8f0;
+    color: #718096;
+    font-style: italic;
+}
+
+.review-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+}
+
+.btn-secondary:hover {
+    box-shadow: 0 6px 20px rgba(113, 128, 150, 0.3);
+}
+
+/* Анимации */
+@keyframes starPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.star.filled {
+    animation: starPulse 0.5s ease-in-out;
+}
+
+.star.filled:nth-child(1) { animation-delay: 0.1s; }
+.star.filled:nth-child(2) { animation-delay: 0.2s; }
+.star.filled:nth-child(3) { animation-delay: 0.3s; }
+.star.filled:nth-child(4) { animation-delay: 0.4s; }
+.star.filled:nth-child(5) { animation-delay: 0.5s; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .review-card {
+        padding: 20px;
+        margin: 15px;
+    }
+    
+    .review-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .star-rating {
+        margin-top: 10px;
+    }
+    
+    .review-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+    }
+    
+    .review-text {
+        padding: 15px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .star {
+        font-size: 1.2em;
+    }
+    
+    .rating-text {
+        font-size: 0.8em;
+    }
+    
+    .review-author {
+        font-size: 1.1em;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Добавляем небольшую анимацию при загрузке
+    const stars = document.querySelectorAll('.star.filled');
+    stars.forEach((star, index) => {
+        setTimeout(() => {
+            star.style.animation = 'starPulse 0.5s ease-in-out';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock review_content %}
