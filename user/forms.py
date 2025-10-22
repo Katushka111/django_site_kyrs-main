@@ -11,15 +11,15 @@ from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 User = get_user_model()
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, max_length=66,
-                              widget=forms.EmailInput(attrs={'class': 'input-register form-control','placeholder': 'Your email'}))
-    first_name = forms.CharField(required=True,max_length=50,widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'first name'}))
-    last_name = forms.CharField(required=True,max_length=50,widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'last name'}))
+                              widget=forms.EmailInput(attrs={'class': 'input-register form-control','placeholder': 'Ваша почта'}))
+    first_name = forms.CharField(required=True,max_length=50,widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'Имя'}))
+    last_name = forms.CharField(required=True,max_length=50,widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'Фамилия'}))
     password1 = forms.CharField(
         required=True,
         max_length=50,
         widget=forms.PasswordInput(attrs={
             'class': 'input-register form-control',
-            'placeholder': 'Your password'
+            'placeholder': 'Пароль'
         })
     )
     password2 = forms.CharField(
@@ -27,12 +27,10 @@ class CustomUserCreationForm(UserCreationForm):
         max_length=50,
         widget=forms.PasswordInput(attrs={
             'class': 'input-register form-control',
-            'placeholder': 'Confirm your password'
+            'placeholder': 'Подтвердите ваш пароль'
         })
     )
-    is_trener = forms.BooleanField(required=False, 
-                                   label='I am trener',
-                                   widget=forms.CheckboxInput(attrs={'class':'checbox-input-register'}))
+
     class Meta:
         model = User
         fields = ('first_name', 'last_name','email','password1', 'password2','is_trener')
@@ -51,8 +49,8 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomUserLoginForm(AuthenticationForm):
-    username = forms.CharField(label='Email',widget=forms.TextInput(attrs={'autofocus':True,'class':'input-register form-control','placeholder':'Your email'}))
-    password = forms.CharField(label='Password',widget=forms.PasswordInput(attrs={'autofocus':True,'class':'input-register form-control','placeholder':'Your password'}))
+    username = forms.CharField(label='Email',widget=forms.TextInput(attrs={'autofocus':True,'class':'input-register form-control','placeholder':'Ваша почта'}))
+    password = forms.CharField(label='Password',widget=forms.PasswordInput(attrs={'autofocus':True,'class':'input-register form-control','placeholder':'Пароль'}))
     
 
     def clean(self):
@@ -70,23 +68,23 @@ class CustomUserLoginForm(AuthenticationForm):
 class CustomUserUpdatedForm(forms.ModelForm):
     phone = forms.CharField(required=False,
                             validators=[RegexValidator(r'^\+?1?\d{9,15}$',"Enter a valid phone number.")],
-                            widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'Your phone number'}))
+                            widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'Ваша почта'}))
     first_name = forms.CharField(required=True,
                                  max_length=50,
-                                 widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'first name'}))
+                                 widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'имя'}))
     last_name = forms.CharField(required=True,
                                  max_length=50,
-                                 widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'last name'}))
+                                 widget=forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'Фамилия'}))
     email = forms.EmailField(required=False,
-                                 widget=forms.EmailInput(attrs={'class': 'input-register form-control','placeholder': 'Your email'}))
+                                 widget=forms.EmailInput(attrs={'class': 'input-register form-control','placeholder': 'Ваша почта'}))
     class Meta:
         model = User
         fields = ('first_name','last_name','email','phone')
         widgets = {
-            'email':forms.EmailInput(attrs={'class': 'input-register form-control','placeholder': 'Your email'}),
-            'first_name':forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'first name'}),
-            'last_name':forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'last name'}),
-            'phone':forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'Your phone number'}),
+            'email':forms.EmailInput(attrs={'class': 'input-register form-control','placeholder': 'Ваша почта'}),
+            'first_name':forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'имя'}),
+            'last_name':forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'Фамилия'}),
+            'phone':forms.TextInput(attrs={'class': 'input-register form-control','placeholder': 'Телефонный номер'}),
             }
     def clean_email(self):
         email = self.cleaned_data.get('email')
