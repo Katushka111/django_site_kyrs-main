@@ -1,12 +1,12 @@
 {% extends 'user/base.html' %}
 
-{% block title %}Log In{% endblock %}
+{% block title %}Войти{% endblock %}
 
 {% block content %}
 <div class="auth-container login-container">
     <div class="auth-header">
-        <h1>Welcome Back</h1>
-        <p>Sign in to continue your fitness journey</p>
+        <h1>Добро пожаловать</h1>
+        <p>Войти в аккаунт</p>
     </div>
     
     <div class="auth-content">
@@ -15,7 +15,7 @@
             
             <div class="form-group">
                 <label for="{{ form.username.id_for_label }}">
-                    <i class="fas fa-envelope"></i>Email
+                    <i class="fas fa-envelope"></i>Почта
                 </label>
                 <div class="icon-wrapper">
                     <i class="fas fa-envelope"></i>
@@ -28,7 +28,7 @@
             
             <div class="form-group">
                 <label for="{{ form.password.id_for_label }}">
-                    <i class="fas fa-lock"></i>Password
+                    <i class="fas fa-lock"></i>Пароль
                 </label>
                 <div class="icon-wrapper">
                     <i class="fas fa-lock"></i>
@@ -41,15 +41,15 @@
             </div>
             
             <button type="submit" class="auth-button">
-                <i class="fas fa-sign-in-alt"></i>Log In
+                <i class="fas fa-sign-in-alt"></i>Войти
             </button>
             
             <div class="auth-links">
                 <a href="{% url 'user:password_reset' %}" class="auth-link">
-                    <i class="fas fa-key"></i>Forgot Password?
+                    <i class="fas fa-key"></i>Забыли пароль
                 </a>
                 <a href="{% url 'user:register' %}" class="auth-link">
-                    <i class="fas fa-user-plus"></i>Don't have an account? Register
+                    <i class="fas fa-user-plus"></i>Нету аккаунта? Зарегеситрироваться 
                 </a>
             </div>
         </form>
