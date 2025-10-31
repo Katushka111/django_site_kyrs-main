@@ -54,6 +54,7 @@ class Service(models.Model):
     description = models.TextField(blank=True, verbose_name='Описание')
     image = models.ImageField(upload_to='services/%Y/%m/%d', blank=True, verbose_name='Фото услуги')
     available = models.BooleanField(default=True, verbose_name='Доступно')
+    capacity = models.PositiveIntegerField(default=10, verbose_name='Количество мест')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
@@ -67,6 +68,19 @@ class Service(models.Model):
     
     def get_absolute_url(self):
         return reverse("main:service_detail", args=[self.id, self.slug])
+
+    @property
+    def booked_count(self) -> int:
+        return self.bookings.count()
+
+    @property
+    def seats_left(self) -> int:
+        remaining = self.capacity - self.booked_count
+        return remaining if remaining > 0 else 0
+
+    @property
+    def is_full(self) -> bool:
+        return self.booked_count >= self.capacity
 
 
 class UserService(models.Model):
@@ -82,4 +96,3 @@ class UserService(models.Model):
     
     def __str__(self):
         return f"{self.user.first_name} - {self.service.name}"
-
