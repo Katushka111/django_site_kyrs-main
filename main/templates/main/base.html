@@ -13,11 +13,12 @@
 
     <header class="header">
         <div class="nav-container">
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
             <a href="{% url 'main:service_list' %}" class="logo"></a>
             <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             
             <!-- Desktop navigation -->
-            <nav class="nav-buttons desktop-nav">
+            <nav class="nav-buttons desktop-nav" style="margin-left:auto;">
                 {%if product_list%}
                 <a href="{% url 'main:product_list' %}" class="nav-btn">Товары</a>
                 {%endif%}
@@ -34,7 +35,6 @@
                 <a href="{% url 'user:login' %}" class="nav-btn">Войти</a>
                 <a href="{% url 'user:register' %}" class="nav-btn">Регистрация</a>
                 {%endif%}
-                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
             </nav>
             
             <!-- Sidebar navigation -->
