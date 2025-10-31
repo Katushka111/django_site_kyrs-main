@@ -30,6 +30,15 @@
                 <div class="detail-item">
                     <strong>Время мероприятия:</strong> {{ service.event_time|date:"d.m.Y в H:i" }}
                 </div>
+                <div class="detail-item">
+                    <strong>Места:</strong>
+                    {{ service.booked_count }} / {{ service.capacity }}
+                    {% if service.is_full %}
+                        <span style="color:var(--danger-color); font-weight:600; margin-left:6px;">Нет мест</span>
+                    {% else %}
+                        <span style="color:var(--success-color); font-weight:600; margin-left:6px;">Свободно: {{ service.seats_left }}</span>
+                    {% endif %}
+                </div>
                 
                 <div class="detail-item price">
                                 <strong>Стоимость:</strong> <span class="price-value">{{ service.price }} BYN</span>
@@ -44,10 +53,17 @@
             {% endif %}
             
             {% if user.is_authenticated %}
-                <form method="post" action="{% url 'main:book_service' service.id %}" class="booking-form">
-                    {% csrf_token %}
-                    <button type="submit" class="book-btn">Записаться на услугу</button>
-                </form>
+                {% if user_booking %}
+                    <form method="post" action="{% url 'main:cancel_booking' service.id %}" class="booking-form">
+                        {% csrf_token %}
+                        <button type="submit" class="book-btn" style="background: var(--danger-color);">Отменить запись</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'main:book_service' service.id %}" class="booking-form">
+                        {% csrf_token %}
+                        <button type="submit" class="book-btn" {% if service.is_full %}disabled style="opacity:.6;cursor:not-allowed;"{% endif %}>Записаться на услугу</button>
+                    </form>
+                {% endif %}
             {% else %}
                 <div class="login-required">
                     <p>Для записи на услугу необходимо <a href="{% url 'user:login' %}">войти в систему</a></p>
