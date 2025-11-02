@@ -44,10 +44,14 @@ def service_detail(request, id, slug):
     service = get_object_or_404(Service, id=id, slug=slug, available=True)
     related_services = Service.objects.filter(available=True).exclude(id=service.id)[:4]
     products = Product.objects.filter(available=True)  # Добавляем товары для отображения вкладки
+    user_booking = None
+    if request.user.is_authenticated:
+        user_booking = UserService.objects.filter(user=request.user, service=service).first()
     return render(request, 'main/service/detail.html', {
-        'service': service, 
+        'service': service,
         'related_services': related_services,
-        'product_list': products  # Добавляем product_list для отображения вкладки
+        'product_list': products,  # Добавляем product_list для отображения вкладки
+        'user_booking': user_booking,
     })
 
 @login_required
@@ -55,13 +59,18 @@ def book_service(request, service_id):
     service = get_object_or_404(Service, id=service_id, available=True)
     
     if request.method == 'POST':
+        # Проверка наличия мест
+        if service.is_full:
+            messages.error(request, 'К сожалению, мест больше нет.')
+            return redirect('main:service_detail', id=service.id, slug=service.slug)
+
         # Проверяем, не записан ли уже пользователь на эту услугу
         booking, created = UserService.objects.get_or_create(
             user=request.user,
             service=service,
-            defaults={'is_confirmed': False}
+            defaults={'is_confirmed': True}
         )
-        
+
         if created:
             messages.success(request, f'Вы успешно записались на услугу "{service.name}"!')
         else:
@@ -71,3 +80,19 @@ def book_service(request, service_id):
         return redirect('main:service_detail', id=service.id, slug=service.slug)
     
     return render(request, 'main/service/book.html', {'service': service})
+
+@login_required
+def cancel_booking(request, service_id):
+    service = get_object_or_404(Service, id=service_id)
+    booking = UserService.objects.filter(user=request.user, service=service).first()
+
+    if not booking:
+        messages.info(request, 'У вас нет записи на эту услугу.')
+        return redirect('main:service_detail', id=service.id, slug=service.slug)
+
+    if request.method == 'POST':
+        booking.delete()
+        messages.success(request, f'Запись на услугу "{service.name}" отменена.')
+        return redirect('main:service_detail', id=service.id, slug=service.slug)
+
+    return redirect('main:service_detail', id=service.id, slug=service.slug)
