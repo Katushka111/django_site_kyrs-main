@@ -3,7 +3,12 @@
 
 {% block title %}Профиль - {{ request.user.first_name }}{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
 {% block content %}
+<<<<<<< HEAD
 <style>
 /* Стили для формы прогресса (темная тема) */
 .progress-form {
@@ -789,6 +794,8 @@ textarea.form-control {
 }
 </style>
 
+=======
+>>>>>>> 547942367edbef0b8f8d85b7b23514bfa83fc313
 <div class="profile-container">
     <div class="profile-header">
         <div class="profile-avatar">
@@ -856,6 +863,7 @@ textarea.form-control {
         </div>
         {% endif %}
 
+<<<<<<< HEAD
     <!-- Блок ачивок -->
     <div class="profile-card">
     <h2>🏆 Мои достижения (Уровень {{ user.level }})</h2>
@@ -884,194 +892,225 @@ textarea.form-control {
                 <p>{{ user_achievement.achievement.description }}</p>
                 {% if not user_achievement.is_unlocked %}
                 <div class="achievement-progress">
+=======
+        <!-- Блок ачивок -->
+        <div class="profile-card">
+            <h2>🏆 Мои ачивки (Уровень {{ user.level }})</h2>
+            <div class="level-info">
+                <div class="level-progress">
+>>>>>>> 547942367edbef0b8f8d85b7b23514bfa83fc313
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: {{ user_achievement.progress_percentage }}%"></div>
+                        <div class="progress-fill" style="width: {{ user.experience_points|divisibleby:user.get_next_level_points|default:100 }}%"></div>
                     </div>
-                    <span>{{ user_achievement.progress }}/{{ user_achievement.achievement.requirement }}</span>
-                </div>
-                {% else %}
-                <div class="achievement-unlocked">
-                    <span>✅ Получено: {{ user_achievement.unlocked_at|date:"d.m.Y" }}</span>
-                    <span>+{{ user_achievement.achievement.points_reward }} XP</span>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="no-achievements">
-        <div class="no-achievements-icon">🏆</div>
-        <p>У вас пока нет ачивок</p>
-    </div>
-    {% endif %}
-    </div>
-
-<!-- Блок прогресса -->
-<div class="profile-card">
-    <h2>📊 Мой прогресс</h2>
-    
-    <!-- Общая статистика -->
-    <div class="progress-stats">
-        <div class="stat-item">
-            <span class="stat-number">{{ progress_entries|length }}</span>
-            <span class="stat-label">Всего целей</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number">{{ progress_entries|length|default:0 }}</span>
-            <span class="stat-label">Завершено</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number">{{ user.get_total_progress_percentage }}%</span>
-            <span class="stat-label">Общий прогресс</span>
-        </div>
-    </div>
-
-    <!-- Форма добавления новой цели -->
-    <div class="add-progress-form">
-        <h3>➕ Добавить новую цель</h3>
-        <form method="post" action="{% url 'user:add_progress' %}" class="progress-form">
-            {% csrf_token %}
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="{{ progress_form.category.id_for_label }}">
-                        <i class="icon">📁</i> Категория
-                    </label>
-                    {{ progress_form.category }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ progress_form.title.id_for_label }}">
-                        <i class="icon">🎯</i> Название цели
-                    </label>
-                    {{ progress_form.title }}
-                </div>
-                
-                <div class="form-group full-width">
-                    <label for="{{ progress_form.description.id_for_label }}">
-                        <i class="icon">📝</i> Описание
-                    </label>
-                    {{ progress_form.description }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ progress_form.target_value.id_for_label }}">
-                        <i class="icon">📈</i> Целевое значение
-                    </label>
-                    {{ progress_form.target_value }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ progress_form.unit.id_for_label }}">
-                        <i class="icon">📏</i> Единица измерения
-                    </label>
-                    {{ progress_form.unit }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ progress_form.priority.id_for_label }}">
-                        <i class="icon">⭐</i> Приоритет
-                    </label>
-                    {{ progress_form.priority }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ progress_form.end_date.id_for_label }}">
-                        <i class="icon">📅</i> Дата завершения
-                    </label>
-                    {{ progress_form.end_date }}
+                    <div class="level-stats">
+                        <span>Уровень {{ user.level }}</span>
+                        <span>{{ user.experience_points }} XP</span>
+                        <span>До след. уровня: {{ user.get_next_level_points }} XP</span>
+                    </div>
                 </div>
             </div>
             
-            <button type="submit" class="btn-primary btn-large">
-                <i class="icon">➕</i> Добавить цель
-            </button>
-        </form>
-    </div>
-
-    <!-- Список целей -->
-    {% if progress_entries %}
-    <div class="progress-list">
-        <h3>🎯 Мои цели</h3>
-        {% for progress in progress_entries %}
-        <div class="progress-item {% if progress.is_completed %}completed{% elif progress.is_overdue %}overdue{% endif %}">
-            <div class="progress-header">
-                <div class="progress-category">
-                    {{ progress.category.icon }} {{ progress.category.name }}
-                </div>
-                <div class="progress-priority priority-{{ progress.priority }}">
-                    Приоритет: {{ progress.get_priority_display }}
-                </div>
-            </div>
-            
-            <div class="progress-content">
-                <h4>{{ progress.title }}</h4>
-                {% if progress.description %}
-                <p class="progress-description">{{ progress.description }}</p>
-                {% endif %}
-                
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ progress.progress_percentage }}%"></div>
-                </div>
-                
-                <div class="progress-numbers">
-                    <span>{{ progress.current_value }} / {{ progress.target_value }} {{ progress.unit }}</span>
-                    <span>{{ progress.progress_percentage }}%</span>
-                </div>
-                
-                <div class="progress-dates">
-                    <span>Начало: {{ progress.start_date|date:"d.m.Y" }}</span>
-                    {% if progress.end_date %}
-                    <span>Дедлайн: {{ progress.end_date|date:"d.m.Y" }}</span>
-                    {% if progress.days_remaining is not None %}
-                    <span>Осталось дней: {{ progress.days_remaining }}</span>
-                    {% endif %}
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="progress-actions">
-                <!-- Форма обновления прогресса -->
-                <form method="post" action="{% url 'user:update_progress' progress.id %}" class="update-form">
-                    {% csrf_token %}
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="value_added_{{ progress.id }}">Добавить:</label>
-                            <input type="number" name="value_added" step="0.1" min="0.1" 
-                                   class="form-control" placeholder="0.0" required
-                                   id="value_added_{{ progress.id }}">
+            {% if achievements %}
+            <div class="achievements-grid">
+                {% for user_achievement in achievements %}
+                <div class="achievement-item {% if user_achievement.is_unlocked %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        {{ user_achievement.achievement.icon }}
+                    </div>
+                    <div class="achievement-info">
+                        <h4>{{ user_achievement.achievement.name }}</h4>
+                        <p>{{ user_achievement.achievement.description }}</p>
+                        {% if not user_achievement.is_unlocked %}
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ user_achievement.progress_percentage }}%"></div>
+                            </div>
+                            <span>{{ user_achievement.progress }}/{{ user_achievement.achievement.requirement }}</span>
                         </div>
-                        <button type="submit" class="btn-small" title="Добавить прогресс">
-                            <i class="icon">➕</i>
-                        </button>
+                        {% else %}
+                        <div class="achievement-unlocked">
+                            <span>✅ Получено: {{ user_achievement.unlocked_at|date:"d.m.Y" }}</span>
+                            <span>+{{ user_achievement.achievement.points_reward }} XP</span>
+                        </div>
+                        {% endif %}
                     </div>
-                </form>
-                
-                <form method="post" action="{% url 'user:complete_progress' progress.id %}">
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-achievements">
+                <div class="no-achievements-icon">🏆</div>
+                <p>У вас пока нет ачивок</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Блок прогресса -->
+        <div class="profile-card">
+            <h2>📊 Мой прогресс</h2>
+            
+            <!-- Общая статистика -->
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ progress_entries|length }}</span>
+                    <span class="stat-label">Всего целей</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ progress_entries|length|default:0 }}</span>
+                    <span class="stat-label">Завершено</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ user.get_total_progress_percentage }}%</span>
+                    <span class="stat-label">Общий прогресс</span>
+                </div>
+            </div>
+
+            <!-- Форма добавления новой цели -->
+            <div class="add-progress-form">
+                <h3>➕ Добавить новую цель</h3>
+                <form method="post" action="{% url 'user:add_progress' %}" class="progress-form">
                     {% csrf_token %}
-                    <button type="submit" class="btn-success" title="Завершить цель">
-                        <i class="icon">✅</i>
-                    </button>
-                </form>
-                
-                <form method="post" action="{% url 'user:delete_progress' progress.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-danger" title="Удалить цель">
-                        <i class="icon">🗑️</i>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="{{ progress_form.category.id_for_label }}">
+                                <i class="icon">📁</i> Категория
+                            </label>
+                            {{ progress_form.category }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ progress_form.title.id_for_label }}">
+                                <i class="icon">🎯</i> Название цели
+                            </label>
+                            {{ progress_form.title }}
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="{{ progress_form.description.id_for_label }}">
+                                <i class="icon">📝</i> Описание
+                            </label>
+                            {{ progress_form.description }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ progress_form.target_value.id_for_label }}">
+                                <i class="icon">📈</i> Целевое значение
+                            </label>
+                            {{ progress_form.target_value }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ progress_form.unit.id_for_label }}">
+                                <i class="icon">📏</i> Единица измерения
+                            </label>
+                            {{ progress_form.unit }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ progress_form.priority.id_for_label }}">
+                                <i class="icon">⭐</i> Приоритет
+                            </label>
+                            {{ progress_form.priority }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ progress_form.end_date.id_for_label }}">
+                                <i class="icon">📅</i> Дата завершения
+                            </label>
+                            {{ progress_form.end_date }}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-large">
+                        <i class="icon">➕</i> Добавить цель
                     </button>
                 </form>
             </div>
+
+            <!-- Список целей -->
+            {% if progress_entries %}
+            <div class="progress-list">
+                <h3>🎯 Мои цели</h3>
+                {% for progress in progress_entries %}
+                <div class="progress-item {% if progress.is_completed %}completed{% elif progress.is_overdue %}overdue{% endif %}">
+                    <div class="progress-header">
+                        <div class="progress-category">
+                            {{ progress.category.icon }} {{ progress.category.name }}
+                        </div>
+                        <div class="progress-priority priority-{{ progress.priority }}">
+                            Приоритет: {{ progress.get_priority_display }}
+                        </div>
+                    </div>
+                    
+                    <div class="progress-content">
+                        <h4>{{ progress.title }}</h4>
+                        {% if progress.description %}
+                        <p class="progress-description">{{ progress.description }}</p>
+                        {% endif %}
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ progress.progress_percentage }}%"></div>
+                        </div>
+                        
+                        <div class="progress-numbers">
+                            <span>{{ progress.current_value }} / {{ progress.target_value }} {{ progress.unit }}</span>
+                            <span>{{ progress.progress_percentage }}%</span>
+                        </div>
+                        
+                        <div class="progress-dates">
+                            <span>Начало: {{ progress.start_date|date:"d.m.Y" }}</span>
+                            {% if progress.end_date %}
+                            <span>Дедлайн: {{ progress.end_date|date:"d.m.Y" }}</span>
+                            {% if progress.days_remaining is not None %}
+                            <span>Осталось дней: {{ progress.days_remaining }}</span>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="progress-actions">
+                        <!-- Форма обновления прогресса -->
+                        <form method="post" action="{% url 'user:update_progress' progress.id %}" class="update-form">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="value_added_{{ progress.id }}">Добавить:</label>
+                                    <input type="number" name="value_added" step="0.1" min="0.1" 
+                                           class="form-control" placeholder="0.0" required
+                                           id="value_added_{{ progress.id }}">
+                                </div>
+                                <button type="submit" class="btn-small" title="Добавить прогресс">
+                                    <i class="icon">➕</i>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <form method="post" action="{% url 'user:complete_progress' progress.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-success" title="Завершить цель">
+                                <i class="icon">✅</i>
+                            </button>
+                        </form>
+                        
+                        <form method="post" action="{% url 'user:delete_progress' progress.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-danger" title="Удалить цель">
+                                <i class="icon">🗑️</i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-progress">
+                <div class="no-progress-icon">🎯</div>
+                <p>У вас пока нет целей. Добавьте первую цель выше!</p>
+            </div>
+            {% endif %}
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="no-progress">
-        <div class="no-progress-icon">🎯</div>
-        <p>У вас пока нет целей. Добавьте первую цель выше!</p>
-    </div>
-    {% endif %}
-</div>
+
         <div class="profile-card">
             <h2>📋 Информация о профиле</h2>
             <div class="info-grid">
@@ -1093,19 +1132,16 @@ textarea.form-control {
                 </div>
             </div>
             
-        <button hx-get="{% url 'user:edit_account_details' %}" 
-                hx-target="#account-details-content" 
-                hx-swap="innerHTML" 
-                class="edit-btn"
-                >
-                        
+            <button hx-get="{% url 'user:edit_account_details' %}" 
+                    hx-target="#account-details-content" 
+                    hx-swap="innerHTML" 
+                    class="edit-btn">
                 ✏️ Редактировать профиль
-         
-
-        </button>
-        <div id="account-details-content"></div>
+            </button>
+            <div id="account-details-content"></div>
         </div>
-      <div class="profile-card">
+
+        <div class="profile-card">
             <h2>🏃‍♂️ Мои услуги</h2>
             {% if user.booked_services.all %}
                 <div class="services-list">
