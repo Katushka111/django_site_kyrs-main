@@ -1,7 +1,5 @@
 {% extends "review/base.html" %}
 
-{% block review_title %}Оставить отзыв{% endblock review_title %}
-{% block review_subtitle %}Поделитесь своим мнением о товаре{% endblock review_subtitle %}
 
 {% block review_content %}
 <div class="review-form">
@@ -110,12 +108,12 @@
                 </div>
             </div>
         {% else %}
-            <div class="product-info">
+            <!-- <div class="product-info">
                 <div class="product-icon">🏪</div>
                 <div class="product-details">
                     <strong>Общий отзыв:</strong> О магазине в целом
                 </div>
-            </div>
+            </div> -->
         {% endif %}
         
         <script>
@@ -133,7 +131,7 @@
                 <span class="btn-icon">📝</span>
                 Отправить отзыв
             </button>
-            <a href="{% url 'review:review_list' %}" class="btn btn-secondary">
+            <a href="{% url 'review:review_list' %}" class="btn btn-primary">
                 <span class="btn-icon">←</span>
                 Все отзывы
             </a>

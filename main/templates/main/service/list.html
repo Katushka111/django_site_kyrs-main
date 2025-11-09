@@ -31,11 +31,12 @@
                             <strong>Время:</strong> {{ service.event_time|date:"d.m.Y H:i" }}
                         </div>
                         <div class="service-capacity" style="margin:8px 0;color:var(--text-secondary)">
-                            Мест: {{ service.booked_count }} / {{ service.capacity }}
+                            Занято мест: {{ service.booked_count }} / {{ service.capacity }}
                             {% if service.is_full %}
                                 <span style="color:var(--danger-color); font-weight:600; margin-left:6px;">Нет мест</span>
                             {% else %}
-                                <span style="color:var(--success-color); font-weight:600; margin-left:6px;">Свободно: {{ service.seats_left }}</span>
+                            <br>
+                                <span style="color:var(--success-color); font-weight:600; margin-left:0px;">Свободно: {{ service.seats_left }}</span>
                             {% endif %}
                         </div>
                                     <div class="product-price">{{ service.price }} BYN</div>
