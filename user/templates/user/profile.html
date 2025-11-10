@@ -8,19 +8,17 @@
 {% endblock %}
 
 {% block content %}
+<<<<<<< HEAD
 <style>
 /* Стили для формы прогресса (темная тема) */
 .progress-form {
     margin-top: 1rem;
 }
+=======
+>>>>>>> 2b0447a1b4daa891c9167d2a23ca8b3e2e2065ef
 
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
 
+<<<<<<< HEAD
 .form-group {
     margin-bottom: 1rem;
 }
@@ -793,6 +791,8 @@ textarea.form-control {
 }
 </style>
 
+=======
+>>>>>>> 2b0447a1b4daa891c9167d2a23ca8b3e2e2065ef
 <div class="profile-container">
     <div class="profile-header">
         <div class="profile-avatar">
@@ -860,6 +860,7 @@ textarea.form-control {
         </div>
         {% endif %}
 
+<<<<<<< HEAD
 <!-- Блок ачивок -->
 <div class="profile-card">
     <h2>🏆 Мои достижения (Уровень {{ user.level }})</h2>
@@ -888,6 +889,13 @@ textarea.form-control {
                 <p>{{ user_achievement.achievement.description }}</p>
                 {% if not user_achievement.is_unlocked %}
                 <div class="achievement-progress">
+=======
+        <!-- Блок ачивок -->
+        <div class="profile-card">
+            <h2>🏆 Мои достижения (Уровень {{ user.level }})</h2>
+            <div class="level-info">
+                <div class="level-progress">
+>>>>>>> 2b0447a1b4daa891c9167d2a23ca8b3e2e2065ef
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: {{ user_achievement.progress_percentage }}%"></div>
                     </div>
@@ -1146,7 +1154,7 @@ textarea.form-control {
         </a>
     </div>
 </div>
-
+ {%endblock%}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Обработка удаления уведомлений через AJAX
@@ -1208,22 +1216,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.closest('.alert').remove();
             }, 300);
         });
+
+
     });
+   
     
-    // Автоматическое скрытие сообщений
-    document.querySelectorAll('.alert').forEach(alert => {
-        setTimeout(() => {
-            if (alert.parentNode) {
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateY(-10px)';
-                setTimeout(() => {
-                    if (alert.parentNode) {
-                        alert.remove();
-                    }
-                }, 300);
-            }
-        }, 5000);
-    });
-});
-</script>
-{% endblock %}
+    // Автоматическое скрытие
