@@ -8,7 +8,6 @@
 {% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
 <style>
 /* Стили для формы прогресса (темная тема) */
 .progress-form {
@@ -794,8 +793,6 @@ textarea.form-control {
 }
 </style>
 
-=======
->>>>>>> 547942367edbef0b8f8d85b7b23514bfa83fc313
 <div class="profile-container">
     <div class="profile-header">
         <div class="profile-avatar">
@@ -863,9 +860,8 @@ textarea.form-control {
         </div>
         {% endif %}
 
-<<<<<<< HEAD
-    <!-- Блок ачивок -->
-    <div class="profile-card">
+<!-- Блок ачивок -->
+<div class="profile-card">
     <h2>🏆 Мои достижения (Уровень {{ user.level }})</h2>
     <div class="level-info">
         <div class="level-progress">
@@ -879,7 +875,7 @@ textarea.form-control {
             </div>
         </div>
     </div>
-    
+
     {% if achievements %}
     <div class="achievements-grid">
         {% for user_achievement in achievements %}
@@ -892,58 +888,28 @@ textarea.form-control {
                 <p>{{ user_achievement.achievement.description }}</p>
                 {% if not user_achievement.is_unlocked %}
                 <div class="achievement-progress">
-=======
-        <!-- Блок ачивок -->
-        <div class="profile-card">
-            <h2>🏆 Мои ачивки (Уровень {{ user.level }})</h2>
-            <div class="level-info">
-                <div class="level-progress">
->>>>>>> 547942367edbef0b8f8d85b7b23514bfa83fc313
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: {{ user.experience_points|divisibleby:user.get_next_level_points|default:100 }}%"></div>
+                        <div class="progress-fill" style="width: {{ user_achievement.progress_percentage }}%"></div>
                     </div>
-                    <div class="level-stats">
-                        <span>Уровень {{ user.level }}</span>
-                        <span>{{ user.experience_points }} XP</span>
-                        <span>До след. уровня: {{ user.get_next_level_points }} XP</span>
-                    </div>
+                    <span>{{ user_achievement.progress }}/{{ user_achievement.achievement.requirement }}</span>
                 </div>
-            </div>
-            
-            {% if achievements %}
-            <div class="achievements-grid">
-                {% for user_achievement in achievements %}
-                <div class="achievement-item {% if user_achievement.is_unlocked %}unlocked{% else %}locked{% endif %}">
-                    <div class="achievement-icon">
-                        {{ user_achievement.achievement.icon }}
-                    </div>
-                    <div class="achievement-info">
-                        <h4>{{ user_achievement.achievement.name }}</h4>
-                        <p>{{ user_achievement.achievement.description }}</p>
-                        {% if not user_achievement.is_unlocked %}
-                        <div class="achievement-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: {{ user_achievement.progress_percentage }}%"></div>
-                            </div>
-                            <span>{{ user_achievement.progress }}/{{ user_achievement.achievement.requirement }}</span>
-                        </div>
-                        {% else %}
-                        <div class="achievement-unlocked">
-                            <span>✅ Получено: {{ user_achievement.unlocked_at|date:"d.m.Y" }}</span>
-                            <span>+{{ user_achievement.achievement.points_reward }} XP</span>
-                        </div>
-                        {% endif %}
-                    </div>
+                {% else %}
+                <div class="achievement-unlocked">
+                    <span>✅ Получено: {{ user_achievement.unlocked_at|date:"d.m.Y" }}</span>
+                    <span>+{{ user_achievement.achievement.points_reward }} XP</span>
                 </div>
-                {% endfor %}
+                {% endif %}
             </div>
-            {% else %}
-            <div class="no-achievements">
-                <div class="no-achievements-icon">🏆</div>
-                <p>У вас пока нет ачивок</p>
-            </div>
-            {% endif %}
         </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-achievements">
+        <div class="no-achievements-icon">🏆</div>
+        <p>У вас пока нет ачивок</p>
+    </div>
+    {% endif %}
+</div>
 
         <!-- Блок прогресса -->
         <div class="profile-card">
